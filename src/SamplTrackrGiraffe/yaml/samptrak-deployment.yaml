@@ -1,0 +1,48 @@
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: sampgiraf-dply
+spec:
+  selector:
+    matchLabels:
+      app: sampgiraf
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: sampgiraf
+    spec:
+      containers:
+      - name: sampgiraf-suave
+        image: bennylynch/samptrakgiraffe:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9090
+        resources :
+          requests:
+            memory: "600Mi"
+            cpu: "400m"
+          limits:
+            memory: "800Mi"
+            cpu: "500m"
+        livenessProbe:
+         httpGet:
+           path: /health
+           port: 9090
+         initialDelaySeconds: 60
+         timeoutSeconds: 10
+         periodSeconds: 30
+        volumeMounts:
+        - name: keys
+          readOnly: false
+          mountPath: /etc/keys
+      volumes:
+      - name: keys
+        flexVolume:
+          driver: "fstab/cifs"
+          fsType: "cifs"
+          secretRef:
+            name: "cifs-secret"
+          options:
+            networkPath: "//files-tdl/DEPT/IT/samptrakkeys"
+            mountOptions: "dir_mode=0755,file_mode=0644,noperm"

@@ -1,0 +1,87 @@
+﻿<html>
+<head>
+  <title>Tube Tracker</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <base href="/">
+  <link href="/Content/bootstrap.css" rel="stylesheet" type="text/css" />
+  <link href="/Content/bootstrap-grid.css" rel="stylesheet" type="text/css" />
+  <link href="/Content/ng2-toastr.css" rel="stylesheet" />
+  <link href="/Content/Site.css" rel="stylesheet" type="text/css" />
+  <link href="/Content/sidebar.css" rel="stylesheet" />
+  <link href="/Content/drag-style.css" rel="stylesheet" />
+  <link href="/Content/vertical-timeline.css" />
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script src="/Content/jquery.min.js"></script>
+</head>
+<body>
+  <nav class="navbar fixed-top navbar-toggleable-md" role="navigation">
+    <!--<a class="navbar-brand">
+        <span class="logo"></span>
+    </a>-->
+    <ul class="nav-item">
+      <li class="nav-link">
+        <!--<a href="/">Home</a>-->
+        <!-- <a href="#menu-toggle" >Toggle Menu</a> -->
+        
+        <span class="fa fa-bars" aria-hidden="true" id="menu-toggle"></span>
+      </li>
+    </ul>
+
+    <div class="nav-item ml-auto">
+      <div class="justify-content-end">
+      </div>
+    </div>
+
+  </nav>
+  <div class="container">
+    
+    <form class="form-signin" role="form" method="post" action="/account/logon">
+      <fieldset>
+        {% if model.msg %}
+          <h4> {{ model.msg }} </h4>
+        {% endif %}
+        <h2 class="form-signin-heading">Please sign in</h2>
+        <input class="form-control" placeholder="Username" name="Username" id="Username" />
+        <input class="form-control" placeholder="Password" type="password" name="Password" />
+        <select id="Location" name="Location" class="form-control"></select>
+        <button class="btn btn-lg btn-primary btn-block" id="submit" type="submit">Sign in</button>
+        <a href="/account/reset">Forgot Password</a>
+      </fieldset>
+    </form>
+  </div>
+  <div class="footer container-fluid">© TDL 2017</div>
+  <script type="text/javascript">
+    $(function () {
+      const isIE = /msie\s|trident\//i.test(window.navigator.userAgent);
+      console.log(isIE);
+      if (!isIE) {
+        $('#Username').focus();
+        $('#Username').change(function () {
+          var un = $(this).val();
+          $("#Location > option").remove();
+          $.ajax({
+            url: '/api/userlocations/' + un,
+            type: 'GET',
+            dataType: 'json',
+            success: function (resp) {
+              $.each(resp, function (idx, loc) {
+                $('#Location').append($('<option />').val(loc.LocationId).text(loc.Name));
+              });
+              $('#submit').prop('disabled', false);
+            },
+            fail: function (err) {
+              alert(err);
+            }
+          });
+        });
+      }
+      else {
+        alert("Internet explorer not compatible!\r\nPlease user chrome/firefox/edge");
+        window.close();
+      }
+    });
+  </script>
+</body>
+</html>

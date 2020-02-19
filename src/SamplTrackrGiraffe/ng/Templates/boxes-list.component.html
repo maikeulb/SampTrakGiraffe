@@ -1,0 +1,32 @@
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-12">
+                <h4 style="text-align: left">Boxes</h4>
+            </div>
+        </div>
+    </div>
+    <div class="card-block">
+        <div class="row" *ngFor='let b of boxes'>
+            <div class="col-2">
+                <span class="boxsvg">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            </div>
+            <div class="col-7">
+                <span>{{b.Description}}</span>
+            </div>
+            <div class="col-1">
+              <span class="fa fa-remove" aria-hidden="true" *ngIf="parent === 'pack'" (click)=remove(b) placement="top" ngbTooltip="Remove"></span>
+            
+              <!--<button type="button" class="btn btn-link" *ngIf="parent === 'pack'" (click)=remove(b)>Remove</button>-->
+            </div>
+            <div class="col-1">
+              <span class="fa fa-print" aria-hidden="true" *ngIf="parent === 'pack'" (click)=printLabel(b) placement="top" ngbTooltip="Label"></span>
+            </div>
+            <div class="col-1">
+                <span class="fa fa-list-ol" aria-hidden="true" (click)=contents(b) placement="top" ngbTooltip="Show contents"></span>
+                <span class="fa fa-frown-o" aria-hidden="true" *ngIf="parent === 'unpack'" (click)="missing(b)" placement="top" ngbTooltip="Missing"></span>
+                <!--<button type="button" class="btn btn-link" *ngIf="parent === 'pack'" (click)=remove(b)>Remove</button>-->
+            </div>
+        </div>
+    </div>
+</div>

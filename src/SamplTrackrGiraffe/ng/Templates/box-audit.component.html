@@ -1,0 +1,41 @@
+<h5>Box Audit</h5>
+<div class='row'>
+    <div class="col-6">
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-6">
+                        <h4 *ngIf="boxAudits?.length > 0" style="text-align: left">box - {{boxAudits[0].Description}}</h4>
+                        <h4 *ngIf="boxAudits?.length === 0" style="text-align: left">Nothing found</h4>
+                    </div>
+                    <div class="col-6">
+                        <h4 style="text-align: right">Box Id - {{boxid}}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="card-block">
+                <table class="table-hover" *ngIf="boxAudits?.length > 0">
+                    <tr>
+                        <th>Parent</th>
+                        <th></th>
+                    </tr>
+                    <tr *ngFor='let b of boxAudits'
+                    (click)="onSelect(b)"
+                    [class.selected]="b === selectedBox">
+                        <td>{{b.ParentBox}}</td>
+                        <td>{{b.Event}}</td>
+                        <td>{{b.DateTime | date : 'dd/MM/yy HH:mm'}}</td>
+                        <td>{{b.User}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-6">        
+        <sample-list
+            [samples]="samples" 
+            (SamplesChangedEvt) ="samplesChanged($event)" >
+        </sample-list>
+    </div>
+</div>
+<!--<horizontal-timeline [timelineElements]="timeline" [showContent]="true"></horizontal-timeline>-->

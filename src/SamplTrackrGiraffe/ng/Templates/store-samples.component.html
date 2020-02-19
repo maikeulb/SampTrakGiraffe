@@ -1,0 +1,43 @@
+<div class="row">
+    <div class="col-md-4">
+        <input type="text" placeholder="scan" #labno (keyup.enter)="labnoScanned($event,labno)" /> <!-- [disabled]="postInProgress" /> -->
+    </div>
+    <div class="col-4">
+        <h5>{{rack?.Description}}</h5>
+    </div>
+    <div class="col-md-4">
+        <button class="btn btn-normal" (click)="emptyRackModal.show()" [disabled]="postInProgress" >Empty</button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8">
+        <svg id="svg">
+            <defs>
+                <linearGradient id="MyGradient">
+                    <stop offset="10%" stop-color="#36D1DC" /> 
+                    <stop offset="90%" stop-color="#5B86E5" />
+                </linearGradient>
+            </defs>
+            <rect [style.width]="totalWidth" height="600" />
+        </svg>
+    </div>
+    <div class="col-md-4">
+        <sample-list
+                [samples]="samples" [parent]="'store'"
+                (SamplesChangedEvt) ="samplesChanged($event)" >
+        </sample-list>
+    </div>
+</div>
+
+<app-modal #emptyRackModal>
+    <div class="app-modal-header">
+        Empty Rack ?
+    </div>
+    <div class="app-modal-body">
+        Are you sure you want to empty this rack?
+    </div>
+    <div class="app-modal-footer">
+        <button type="button" class="btn btn-default" (click)="emptyRackModal.hide()">No</button>
+        <button type="button" class="btn btn-primary" (click)="emptyRack(emptyRackModal)">Yes</button>
+    </div>
+</app-modal>

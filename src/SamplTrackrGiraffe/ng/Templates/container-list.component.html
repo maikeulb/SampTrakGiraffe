@@ -1,0 +1,37 @@
+<h5>Containers</h5>
+<ngb-accordion [closeOthers]="true" #acc="ngbAccordion"> <!-- activeIds="ngb-panel-0"-->
+  <ngb-panel *ngFor='let ky of arrayOfKeys'>
+    <template ngbPanelTitle>
+        <span droppable (onDrop)="onItemDrop($event,ky)">{{ky}}</span>
+    </template>
+    <template ngbPanelContent>
+        <button type="button" class="btn btn-link" (click)=create(ky)>New Container</button>
+        <div class="row" *ngFor='let c of containers[ky]'>
+            <div class="col-md-3" draggable [dragData]="c" > 
+                <span *ngIf="!c.editable"> {{c.Description}} </span>
+                <input *ngIf="c.editable" type="text" [(ngModel)]="c.Description" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <span *ngIf="!c.editable"> {{c.ContainerType}} </span>
+                <select *ngIf="c.editable" type="text" [(ngModel)]="c.ContainerType" class="form-control">
+                    <option *ngFor="let ct of containerTypes" [value]="ct.ContainerType">{{ct.ContainerType}}</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <span *ngIf="!c.editable"> {{c.Location.Name}} </span>
+                <select *ngIf="c.editable" type="text" [(ngModel)]="c.Location.LocationId" class="form-control">
+                    <option *ngFor="let loc of locations" [value]="loc.LocationId">{{loc.Name}}</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <span class="fa fa-pencil" aria-hidden="true" *ngIf="!c.editable" (click)="toggleEditable(c)" ngbTooltip="Edit"></span>
+                <span class="fa fa-list-ol" aria-hidden="true" *ngIf="!c.editable" (click)="racks(c)" placement="top" ngbTooltip="Show contents"></span>
+                <span class="fa fa-floppy-o" aria-hidden="true" *ngIf="c.editable" (click)="save(c)" ngbTooltip="Save"></span>
+                <!--button type="button" class="btn btn-link" *ngIf="!c.editable" (click)="toggleEditable(c)">Edit</button>
+                <button type="button" class="btn btn-link" *ngIf="!c.editable" (click)="racks(c)">Racks</button>
+                <button type="button" class="btn btn-link" *ngIf="c.editable"  (click)="save(c)">Save</button-->
+            </div>
+        </div>
+    </template>
+  </ngb-panel>
+</ngb-accordion>

@@ -1,0 +1,14 @@
+<ngb-accordion [closeOthers]="true" #acc="ngbAccordion" activeIds="ngb-panel-0">
+  <ngb-panel *ngFor='let site of sites' title='{{site.Name}} - {{site.Description}}'>
+    <template ngbPanelContent>
+        <table>
+          <tr *ngFor='let loc of site.LocationMembership'>
+            <td>{{loc.Name}}</td>
+            <td>
+              <input type="checkbox"  [(ngModel)]="loc.IsMember" [checked]="loc.IsMember" (change)="onMemberShipChanged(loc)"/>
+            </td>
+          </tr>
+        </table>
+    </template>
+  </ngb-panel>
+</ngb-accordion>

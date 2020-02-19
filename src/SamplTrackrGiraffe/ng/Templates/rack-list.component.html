@@ -1,0 +1,39 @@
+<h5>Racks</h5>
+<ngb-accordion [closeOthers]="true" #acc="ngbAccordion"> <!-- activeIds="ngb-panel-0"-->
+  <ngb-panel *ngFor='let cr of cracks'>
+    <template ngbPanelTitle>
+        <span droppable (onDrop)="onItemDrop($event,cr)">{{cr.Container.Description}}</span>
+    </template>
+    <template ngbPanelContent>
+        <button *ngIf="isAdmin" type="button" class="btn btn-link" (click)=create(cr)>New Rack</button>
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-1">Rows</div>
+            <div class="col-md-1">Cols</div>
+        </div>
+        <div class="row" *ngFor='let rr of cr.Racks'>
+            <div class="col-md-4">
+                <span *ngIf="!rr.editable" draggable [dragData]="rr"> {{rr.Description}} </span>
+                <input *ngIf="rr.editable" type="text" [(ngModel)]="rr.Description" class="form-control" />
+            </div>
+            <div class="col-md-1">
+                <span *ngIf="!rr.editable"> {{rr.Rows}} </span>
+                <input *ngIf="rr.editable" type="number" [(ngModel)]="rr.Rows" class="form-control" />
+            </div>
+            <div class="col-md-1">
+                <span *ngIf="!rr.editable"> {{rr.Cols}} </span>
+                <input *ngIf="rr.editable" type="number" [(ngModel)]="rr.Cols" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <span *ngIf="!rr.editable"> {{rr.Status}} </span>
+                <span *ngIf="rr.editable" (click)="printLabel(rr)"><img src="/api/barcode/RACK{{rr.RackId}}" alt="barcode" /></span>
+            </div>
+            <div class="col-md-3">
+                <span class="fa fa-pencil" aria-hidden="true" *ngIf="!rr.editable" (click)="toggleEditable(rr)" ngbTooltip="Edit"></span>
+                <span class="fa fa-list-ol" aria-hidden="true" *ngIf="!rr.editable" (click)="samples(rr)" placement="top" ngbTooltip="Samples"></span>
+                <span class="fa fa-floppy-o" aria-hidden="true" *ngIf="rr.editable" (click)="save(rr,cr)" ngbTooltip="Save"></span>
+            </div>
+        </div>
+    </template>
+  </ngb-panel>
+</ngb-accordion>

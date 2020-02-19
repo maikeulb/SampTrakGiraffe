@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "SamplTrackrGiraffe", "SamplTrackrGiraffe.fsproj", "{F1CFE660-FEC4-4177-8B95-ABAE67570479}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F1CFE660-FEC4-4177-8B95-ABAE67570479}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1CFE660-FEC4-4177-8B95-ABAE67570479}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1CFE660-FEC4-4177-8B95-ABAE67570479}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1CFE660-FEC4-4177-8B95-ABAE67570479}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BE1C2129-1A63-452F-87E9-8C8F72A90917}
+	EndGlobalSection
+EndGlobal

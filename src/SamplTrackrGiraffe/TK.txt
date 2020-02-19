@@ -1,0 +1,27 @@
+﻿1. Shared data encryption/protection key
+	* shared drive mount
+
+	  volumeMounts:
+        - name: keys
+          mountPath: /etc/keys
+      volumes:
+      - name: keys
+        flexVolume:
+            driver: "fstab/cifs"
+            fsType: "cifs"
+            secretRef:
+                name: "cifs-secret"
+            options:
+                networkPath: "//request-forms/scans$"
+                mountOptions: "dir_mode=0755,file_mode=0644,noperm"
+    ********* DONE ************
+2. Use the key to encrypt/decrypt state coookie **DONE**
+3. Improve serialisation perf (actually, this might be better from nginx ingress)
+4. loading gif 
+5. appsettings
+    - go through code, set config from appsettings (connxn string, smtp, monitored location) DONE
+6. wrap things in transactions - partial
+7. change location route - DONE
+8. change password route - test
+9. Audit route (server side dotliquid) - DONE
+10. Make sure every route is set up

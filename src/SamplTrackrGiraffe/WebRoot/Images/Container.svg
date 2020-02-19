@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<svg
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:cc="http://creativecommons.org/ns#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:svg="http://www.w3.org/2000/svg"
+    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+    xmlns:ns1="http://sozi.baierouge.fr"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    id="svg2"
+    viewBox="0 0 99.98 245.79"
+    version="1.1"
+  >
+  <g
+      id="layer1"
+      transform="translate(-39.961 -52.701)"
+    >
+    <g
+        id="g2988"
+        fill="#ddd"
+        stroke="#000000"
+        transform="matrix(.35580 0 0 .35580 -26.952 -38.508)"
+      >
+      <rect
+          id="rect2985"
+          opacity=".4892"
+          height="482.86"
+          width="262.86"
+          stroke="#000000"
+          y="429.51"
+          x="197.14"
+      />
+      <rect
+          id="rect2992"
+          opacity=".4892"
+          height="134.29"
+          width="17.143"
+          stroke="#000000"
+          y="455.22"
+          x="220"
+      />
+      <path
+          id="rect2994"
+          opacity=".4892"
+          d="m211.45 256.35c-7.9142 0-14.312 6.3982-14.312 14.312v151.41h262.88v-151.41c0-7.9143-6.367-14.312-14.281-14.312h-234.28z"
+      />
+      <rect
+          id="rect2999"
+          opacity=".4892"
+          height="82.857"
+          width="17.143"
+          stroke="#000000"
+          y="307.79"
+          x="220"
+      />
+      <rect
+          id="rect3001"
+          opacity=".4892"
+          height="34.286"
+          width="280"
+          stroke="#000000"
+          y="912.36"
+          x="188.57"
+      />
+    </g>
+  </g>
+  
+</svg>

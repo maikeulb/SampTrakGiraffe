@@ -1,0 +1,41 @@
+<h5>Boxes</h5>
+<ngb-accordion [closeOthers]="true" #acc="ngbAccordion"> <!-- activeIds="ngb-panel-0"-->
+  <ngb-panel *ngFor='let ky of arrayOfKeys'>
+    <template ngbPanelTitle>
+      <!--<span droppable (onDrop)="onItemDrop($event,ky)"> {{ky}} </span>-->
+      <span> {{ky}} </span>
+    </template>
+    <template ngbPanelContent>
+        <button type="button" class="btn btn-link" (click)=create(ky)>New Box </button> 
+
+      <div class="row" *ngFor='let b of boxes[ky]' >
+            <div class="col-md-3">
+                <span *ngIf="!b.editable" draggable [dragData]="b"> {{b.Description}} </span>
+                <input *ngIf="b.editable" type="text" [(ngModel)]="b.Description" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <span *ngIf="!b.editable"> {{b.BoxType}} </span>
+                <select *ngIf="b.editable" type="text" [(ngModel)]="b.BoxType" class="form-control">
+                    <option *ngFor="let bt of boxTypes" [value]="bt.BoxType">{{bt.BoxType}}</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <span *ngIf="!b.editable"> {{b.LastLocation.Name}} </span>
+                <select *ngIf="b.editable" type="text" [(ngModel)]="b.LastLocation.LocationId" class="form-control">
+                    <option *ngFor="let loc of locations" [value]="loc.LocationId">{{loc.Name}}</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <span *ngIf="!b.editable"> {{b.Status}} </span>
+                <span *ngIf="b.editable && b.BoxId > 0" (click)="printLabel(b)" class="clickable" ><img src="/api/barcode/BOX{{b.BoxId}}" alt="barcode" /></span>
+            </div>
+            <div class="col-md-3">
+                <span class="fa fa-pencil" aria-hidden="true" *ngIf="!b.editable" (click)="toggleEditable(b)" ngbTooltip="Edit"></span>
+                <span class="fa fa-list-ol" aria-hidden="true" *ngIf="!b.editable" (click)="contents(b)" placement="top" ngbTooltip="Show contents"></span>
+                <span class="fa fa fa-clipboard" aria-hidden="true" *ngIf="!b.editable" (click)="audit(b)" ngbTooltip="Box Audit"></span>
+                <span class="fa fa-floppy-o" aria-hidden="true" *ngIf="b.editable" (click)="save(b)" ngbTooltip="Save"></span>
+            </div>
+        </div>
+    </template>
+  </ngb-panel>
+</ngb-accordion>

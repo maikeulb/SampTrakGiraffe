@@ -1,0 +1,79 @@
+<div class="row">
+    <div class="col-2">
+        <input type="text" placeholder="scan" #labno (keyup.enter)="labnoScanned($event,labno)" />
+    </div>
+    <div class="col-2">
+        <h4>{{box?.Description}}</h4>
+    </div>
+    <div class="col-2">
+        <span class="fa fa-level-up fa-lg" *ngIf="box?.ParentBoxId" (click)="navigateToParent()" placement="right" ngbTooltip="Go to parent box."></span>
+    </div>
+    <div class="col-3">
+        <button *ngIf="box?.BoxType !== 'Fixed Box'" class="btn btn-normal" (click)="despatchBox()">Despatch</button>
+        <h4><span *ngIf="box?.BoxType === 'Fixed Box'">{{box?.BoxType}}</span></h4>
+    </div>
+    <div class="col-3">
+        <select *ngIf="box?.BoxType !== 'Fixed Box'" class="form-control" (change) ="onDestinationChanged($event)">
+            <option *ngFor="let loc of despatchLocations" [value]="loc.LocationId">{{loc.Name}}</option>
+        </select>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <box-list 
+            [boxes]="childBoxes" 
+            [parent]="'pack'"
+            (BoxesChangedEvt) ="boxesChanged($event)">
+        </box-list>
+    </div>
+    <div class="col-md-6">
+        <sample-list 
+            [samples]="samples" 
+            [parent]="'pack'"
+            (SamplesChangedEvt) ="samplesChanged($event)" >
+        </sample-list>
+    </div>
+</div>
+
+<app-modal #moveBoxModal>
+    <div class="app-modal-header">
+        Move Box ?
+    </div>
+    <div class="app-modal-body">
+      <p> This box is being packed @ {{box?.Destination.Name}}.</p>
+      <p> Are you sure you want to move this box?</p>
+    </div>
+    <div class="app-modal-footer">
+        <button type="button" class="btn btn-default" (click)="moveBoxModalHandler(moveBoxModal,0)">No</button>
+        <button type="button" class="btn btn-primary" (click)="moveBoxModalHandler(moveBoxModal,1)">Yes</button>
+    </div>
+</app-modal>
+
+<app-modal #setFixedBoxDestintationModal>
+  <div class="app-modal-header">
+    Select Destination
+  </div>
+  <div class="app-modal-body">
+    <select class="form-control" (change) ="onChildBoxDestinationChanged($event)">
+      <option *ngFor="let loc of despatchLocations" [value]="loc.LocationId">{{loc.Name}}</option>
+    </select>
+  </div>
+  <div class="app-modal-footer">
+    <button type="button" class="btn btn-primary" (click)="setFixedBoxDestintationModalHandler(setFixedBoxDestintationModal)">Go</button>
+  </div>
+</app-modal>
+
+<app-modal #despatchLocationNotSelectedModal>
+  <div class="app-modal-header">
+    Despatch Location not selected.
+  </div>
+  <div class="app-modal-body">
+    Please select a despatch location.
+  </div>
+  <div class="app-modal-footer">
+    
+    <button type="button" class="btn btn-primary" (click)="despatchLocationNotSelectedModal.hide()">Ok</button>
+    <!--<button type="button" class="btn btn-default" (click)="despatchLocationNotSelectedModal.hide()">No</button>
+  <button type="button" class="btn btn-primary" (click)="despatchLocationNotSelectedModalHander(despatchLocationNotSelectedModal)">Yes</button>-->
+  </div>
+</app-modal>

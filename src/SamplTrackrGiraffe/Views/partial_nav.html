@@ -1,0 +1,11 @@
+{% if model.Username %}
+<ul>
+    <li><span>{{model.Username}}</span> <a id="changePwd" href="/account/change">&nbsp;Change pwd</a></li>
+    <li><a href="/account/location"><span>{{model.Location}}</span></a>
+    <a id ="loginLink" href="/account/logoff">&nbsp;Logoff</a></li>
+</ul>
+{% else %}
+<ul>
+    <li><a class="nav-link" id="loginLink" href="/account/logon">Logon</a></li>
+</ul>
+{% endif %}

@@ -1,0 +1,59 @@
+<div class="row">
+    <div class="col-3">
+        <input type="text" placeholder="scan" #labno (keyup.enter)="labnoScanned($event,labno)" />
+    </div>
+    <div class="col-3">
+        <h4>{{box?.Description}}</h4>
+    </div>
+    <div class="col-3">
+        <span class="fa fa-level-up fa-lg" *ngIf="box?.ParentBoxId" (click)="navigateToParent()" placement="left" ngbTooltip="Go to parent box."></span>
+        <span *ngIf="box?.BoxType === 'Fixed Box'"><h4>{{box?.BoxType}}</h4></span>
+    </div>
+    <div class="col-3">
+        <button *ngIf="box?.BoxType === 'Fixed Box'" type="button" class="btn btn-primary" (click)="unpackEverything()">Yes</button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <box-list 
+            [boxes]="childBoxes" 
+            [parent]="'unpack'"
+            (BoxesChangedEvt) ="boxesChanged($event)">
+        </box-list>
+    </div>
+    <div class="col-md-6">
+        <sample-list 
+            [samples]="samples"
+            [parent]="'unpack'"
+            (SamplesChangedEvt) ="samplesChanged($event)" >
+        </sample-list>
+    </div>
+</div>
+
+<app-modal #moveBoxModal>
+    <div class="app-modal-header">
+        Move Box ?
+    </div>
+    <div class="app-modal-body">
+      <p> This box is destined for {{box?.Destination.Name}}.</p>
+      <p> Are you sure you want to move this box?</p>
+    </div>
+    <div class="app-modal-footer">
+        <button type="button" class="btn btn-default" (click)="moveBoxModalHandler(moveBoxModal,0)">No</button>
+        <button type="button" class="btn btn-primary" (click)="moveBoxModalHandler(moveBoxModal,1)">Yes</button>
+    </div>
+</app-modal>
+
+<app-modal #unpackAnywayModal>
+    <div class="app-modal-header">
+        Not found in the box!
+    </div>
+    <div class="app-modal-body">
+        Do you want to unpack anyway?
+    </div>
+    <div class="app-modal-footer">
+        <button type="button" class="btn btn-default" (click)="unpackAnywayModalHandler(unpackAnywayModal,0)">No</button>
+        <button type="button" class="btn btn-primary" (click)="unpackAnywayModalHandler(unpackAnywayModal,1)">Yes</button>
+    </div>
+</app-modal>

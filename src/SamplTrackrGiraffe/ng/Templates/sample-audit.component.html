@@ -1,0 +1,48 @@
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-6">
+                <h4 style="text-align: left">{{sampleNo}}</h4>
+            </div>
+            <div class="col-6">
+                <h4 style="text-align: right">Total = {{sampleAudits?.length}}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="card-block">
+        <div class="row table-header">
+            <div class="col-2"></div>
+            <div class="col-1"><span>Row</span></div>
+            <div class="col-1"><span>Col</span></div>
+            <div class="col-4"><span></span></div>
+            <div class="col-2"><span></span></div>      
+            <div class="col"><span>&nbsp;</span></div>
+        </div>
+        <div class="row" *ngFor='let s of sampleAudits'>
+            <div class="col-2">
+                <span *ngIf="s.Rack !==''">{{s.Rack}}</span>
+                <span *ngIf="s.Box !==''">{{s.Box}}</span>
+                <span *ngIf="s.IsCurrent === true" class="fa fa-list-ol" aria-hidden="true" (click)="samples(s)" placement="top" ngbTooltip="Contents"></span>
+            </div>
+            <div class="col-1">
+                <span *ngIf="s.Row > 0">{{s.Row}}</span>
+            </div>
+            <div class="col-1">
+                <span *ngIf="s.Col > 0">{{s.Col}}</span>
+            </div>
+            <div class="col-4">
+                <span>{{s.Event}}</span>
+            </div>
+            <div class="col-1">
+                <span>{{s.DateTime | date : 'dd/MM/yy HH:mm'}}</span>
+            </div>
+            <div class="col-1">
+                <span>{{s.User}}</span>
+            </div>
+            
+            <div class="col {{s.SampleType}}">
+                &nbsp;
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,44 @@
+<h5>Locations</h5>
+<ngb-accordion [closeOthers]="true" #acc="ngbAccordion" (click) ="accordionClick()" >
+  <ngb-panel *ngFor='let site of sites' title='{{site.Name}} - {{site.Description}}'>
+    <template ngbPanelContent>
+      <div class="row" *ngFor='let loc of site.LocationsDespatchLocations' (click)="onSelect(loc)">
+        <div class="col-4">
+          <span *ngIf="!loc.editable"> {{loc.Name}} </span>
+          <input *ngIf="loc.editable" maxlength="50" type="text" [(ngModel)]="loc.Name" class="form-control" />
+        </div>
+        <div class="col-1">
+          <span *ngIf="!loc.editable"> {{loc.PrinterIp}} </span>
+          <input *ngIf="loc.editable" maxlength="50" type="text" [(ngModel)]="loc.PrinterIp" class="form-control" />
+        </div>
+        <div class="col-1">
+          <span *ngIf="!loc.editable"> {{loc.LabelFormat.Name}} </span>
+          <!-- TK: should be a select list -->
+          <input *ngIf="loc.editable" maxlength="50" type="number" [(ngModel)]="loc.LabelFormat.FormatId" class="form-control" />
+        </div>
+        <div class="col-1">
+          <span class="fa fa-pencil" aria-hidden="true" *ngIf="!loc.editable" (click)="toggleEditable(loc)" ngbTooltip="Edit"></span>
+          <span class="fa fa-floppy-o" aria-hidden="true" *ngIf="loc.editable" (click)="save(loc)" ngbTooltip="Save"></span>
+        </div>
+        <div class="col-1">
+          <span class="fa fa-list-ol" aria-hidden="true" (click)="containers(loc)" placement="top" ngbTooltip="Containers"></span>
+        </div>
+        <div class="col-4">
+          <div class="card">
+            <div class="card-header">
+              <div class="row">
+                <h5>Despatch locations</h5>
+              </div>
+            </div>
+            <div class="card-block">
+              <location-despatch-sites
+                      [location]="loc"
+                      [sites]="loc.DespatchLocations">
+              </location-despatch-sites>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+  </ngb-panel>
+</ngb-accordion>

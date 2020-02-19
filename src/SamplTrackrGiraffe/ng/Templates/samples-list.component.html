@@ -1,0 +1,51 @@
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-6">
+                <h4 style="text-align: left">Samples</h4>
+            </div>
+            <div class="col-6">
+                <h4 style="text-align: right">Total = {{reverseSortedSamples.length}}</h4>
+            </div>
+        </div>
+        <!--<span><h4 style="text-align: left">Samples</h4></span>
+        <span><h4 style="text-align: right">Total = {{reverseSortedSamples.length}}</h4></span>-->
+    </div>
+    
+    <div class="card-block">
+        <div class="row table-header">
+            <div class="col-1"><span *ngIf="parent === 'store'">Row</span></div>
+            <div class="col-1"><span *ngIf="parent === 'store'">Col</span></div>
+        </div>
+        <div class="row" *ngFor='let s of reverseSortedSamples'>
+            <div class="col-1">
+                <span *ngIf="parent === 'store'">{{s.Row}}</span>
+            </div>
+            <div class="col-1">
+                <span *ngIf="parent === 'store'">{{s.Col}}</span>
+            </div>
+            <div class="col {{s.SampleType}}">
+                &nbsp;
+            </div>
+            <div class="col-4">
+                <span> {{s.SampleNo}} </span>
+            </div>
+            <div class="col">
+                <span class="fa fa-remove" aria-hidden="true" *ngIf="parent === 'pack' || parent === 'store'" (click)="remove(s)" placement="top" ngbTooltip="Remove"></span>
+                <span class="fa fa-frown-o" aria-hidden="true" *ngIf="parent === 'unpack'" (click)="missing(s)" placement="top" ngbTooltip="Missing"></span>
+                <a href="/sampleaudit/{{s.SampleNo}}"><span class="fa fa fa-clipboard" aria-hidden="true" ngbTooltip="Sample Audit"></span></a>
+            </div>
+        </div>
+    </div>
+</div>
+<app-modal #sampleRemovedModal>
+    <div class="app-modal-header">
+        Please comment on why this has been removed.
+    </div>
+    <div class="app-modal-body">
+        <input type="text" [(ngModel)]="removalMessage" class="form-control" />
+    </div>
+    <div class="app-modal-footer">
+        <button type="button" class="btn btn-primary" (click)="sampleRemoved(sampleRemovedModal)">Save</button>
+    </div>
+</app-modal>

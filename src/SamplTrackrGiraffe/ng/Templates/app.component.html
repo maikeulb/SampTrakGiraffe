@@ -1,0 +1,34 @@
+<!-- Sidebar -->
+<div id="wrapper" class="toggled">
+    <div id="sidebar-wrapper">
+        <ul class="sidebar-nav">
+
+
+            <li>
+                <form class="form-inline">
+                    <input name="options" type="radio" [(ngModel)]="isLocal" [value]="true"
+                           [checked]="isLocal=='true'" (change)="toggleContext()" />Here
+                    <input name="options" type="radio" [(ngModel)]="isLocal" [value]="false"
+                           [checked]="isLocal=='false'" (change)="toggleContext()" />All
+                </form>
+            </li>
+            <li id="usersBtn"><a class="topic" routerLink="/users">Users</a></li>
+            <li id="locationBtn"><a class="topic" routerLink="/locations">Locations</a></li>
+            <li id="containerBtn"><a class="topic" routerLink="/containers">Containers</a></li>
+            <li id="boxBtn"><a class="topic" routerLink="/boxes">Boxes</a></li>
+            <!--<li id="usersBtn" *ngIf="isAdmin"><a class="topic" routerLink="/users">Users</a></li>
+            <li id="locationBtn" *ngIf="isAdmin"><a class="topic" routerLink="/locations">Locations</a></li>
+            <li id="containerBtn" *ngIf="isAdmin"><a class="topic" routerLink="/containers">Containers</a></li>
+            <li id="boxBtn" *ngIf="isAdmin"><a class="topic" routerLink="/boxes">Boxes</a></li>-->
+            <li id="rackBtn"><a class="topic" routerLink="/racks">Racks</a></li>
+            <li id="storesampBtn"><a class="topic" routerLink="/store">Store Samples</a></li>
+            <li id="packboxBtn"><a class="topic" routerLink="/pack">Pack box</a></li>
+            <li id="unpackboxBtn"><a class="topic" routerLink="/unpack">Unpack box</a></li>
+            <!-- <li id="missingBtn"><a class="topic" routerLink="/missing">Missing log</a></li> -->
+            <!-- <li id="packboxBtn"><a class="topic" routerLink="/packboxsamples">SRA tracking</a></li> -->
+            <li id="findSampleBtn"><a class="topic" routerLink="/findsample">Sample Audit</a></li>
+            <li id="findSampleBtn"><a class="topic" routerLink="/findbox">Box Audit</a></li>
+        </ul>
+    </div>
+    <div id="page-content-wrapper"><router-outlet></router-outlet></div>
+</div>
