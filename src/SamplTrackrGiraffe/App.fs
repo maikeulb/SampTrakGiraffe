@@ -1041,7 +1041,7 @@ let main _ =
         .Configure(Action<IApplicationBuilder> configureApp)
         .ConfigureServices(configureServices)
         .ConfigureLogging(configureLogging)
-        //.UseUrls("http://0.0.0.0:9090/")
+        .UseUrls("http://0.0.0.0:9090/")
         .Build()
         .Run()
     0

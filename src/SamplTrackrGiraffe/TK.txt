@@ -25,3 +25,4 @@
 8. change password route - test
 9. Audit route (server side dotliquid) - DONE
 10. Make sure every route is set up
+11. GIT - *DONE*
