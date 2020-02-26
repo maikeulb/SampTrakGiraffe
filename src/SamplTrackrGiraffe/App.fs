@@ -10,6 +10,7 @@ open System.Security.Claims
 open Microsoft.AspNetCore.Authentication
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Cors.Infrastructure
+
 open Microsoft.AspNetCore.Hosting
 open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
@@ -33,9 +34,11 @@ open Newtonsoft.Json
 open System.IO
 open Microsoft.AspNetCore.Authentication.Cookies
 open Microsoft.AspNetCore.DataProtection
-open Newtonsoft.Json
+open Utf8Json
+open Utf8Json.FSharp
 open System.Transactions
 open Microsoft.Extensions.Configuration
+open Utf8Json.Resolvers
 
 
 // ---------------------------------
@@ -306,8 +309,9 @@ module Auth =
             POST >=>
                 fun (next : HttpFunc) (ctx : Microsoft.AspNetCore.Http.HttpContext) ->
                     task {
-                        let! form = ctx.BindFormAsync<RegisterUser>() 
-                        match Repo.User.getUser form.Email (Repo.getCtxt( cnnxn )) with
+                        let! form = ctx.BindFormAsync<RegisterUser>()
+                        let ctxt = (Repo.getCtxt( cnnxn ))
+                        match Repo.User.getUser form.Email ctxt  with
                         | Some existing ->
                             let model = new Dictionary<string,string>()
                             model.Add("Message","Sorry this username is already taken. Try another one.")
@@ -315,7 +319,7 @@ module Auth =
                         | None ->
                             let password = form.Password
                             let isAdmin = form.IsAdmin// = "on"
-                            let user = Repo.User.newUser (form.Email,form.DisplayName,form.ShortName,password,isAdmin) (Repo.getCtxt( cnnxn ))
+                            let user = Repo.User.newUser (form.Email,form.DisplayName,form.ShortName,password,isAdmin) ctxt
                             return! redirectTo false Path.home next ctx
                     }
         ]
@@ -327,7 +331,8 @@ module Auth =
                         task {
                             let (settings : IConfiguration) = ctx.GetService<IConfiguration>()
                             let smtpSvr = settings.["smtpSvr"]
-                            let! form = ctx.BindFormAsync<ResetRequest>() 
+                            let! form = ctx.BindFormAsync<ResetRequest>()
+                            
                             let un = form.Username
                             let token = generateResetToken
                             let hash = genHash token
@@ -335,8 +340,8 @@ module Auth =
                             |None -> return! Successful.OK "Invalid link." next ctx
                             |Some u ->
                                 let subject = sprintf "Password reset request for %s from sample tracker" u.ShortName
-                                let resetUrl = sprintf "https://tubetrack.tdlpathology.com/account/reset/%s"  (System.Net.WebUtility.UrlEncode(token))
-                                let body = sprintf "Click <a href='%s'>here</a> to reset your password for %s.\r\n token = %s %s" (u.DisplayName) resetUrl token hash
+                                let resetUrl = sprintf "%s://%s/account/reset/%s"  (ctx.Request.Scheme) (ctx.Request.Host.ToString()) (System.Net.WebUtility.UrlEncode(token))
+                                let body = sprintf "Click <a href='%s'>here</a> to reset your password for %s.\r\n" resetUrl (u.DisplayName) //token hash
                                 Tdl.Pathology.SampTracker.Utils.sendMail (u.Email,"",subject,body,true,smtpSvr)
                                 return! redirectTo false Path.Account.logon next ctx
                         }
@@ -360,10 +365,11 @@ module Auth =
                             let! form = ctx.BindFormAsync<PasswordChange>()
                             let un = form.Username
                             let password = form.Password
-                            match Repo.User.getUserEntityByName un (Repo.getCtxt( cnnxn )) with
+                            let ctxt = (Repo.getCtxt( cnnxn ))
+                            match Repo.User.getUserEntityByName un ctxt with
                             |None -> return! RequestErrors.NOT_FOUND un next ctx
                             |Some u ->
-                                Repo.User.changeUserPassword u password (Repo.getCtxt( cnnxn )) |> ignore
+                                Repo.User.changeUserPassword u password ctxt |> ignore
                                 return! redirectTo false Path.Account.logon next ctx
                         }
         ]
@@ -384,10 +390,11 @@ module Auth =
                                     //let un = form.Username
                                     let password = form.Password
                                     printfn "%A - %A" password un
-                                    match Repo.User.getUserEntityByDisplayName (Repo.getCtxt( cnnxn )) un with
+                                    let ctxt = (Repo.getCtxt( cnnxn ))
+                                    match Repo.User.getUserEntityByDisplayName ctxt un with
                                     |None -> return! RequestErrors.NOT_FOUND un next ctx
                                     |Some u ->
-                                      Repo.User.changeUserPassword u password  (Repo.getCtxt( cnnxn )) |> ignore
+                                      Repo.User.changeUserPassword u password  ctxt |> ignore
                                       return! redirectTo false Path.Account.logon next ctx
 
                                 }
@@ -417,8 +424,8 @@ module Users =
     let userlocations u =
         choose [
             GET >=> fun (next : HttpFunc) (ctx : Microsoft.AspNetCore.Http.HttpContext) ->
+                        printfn "%A" (ctx.GetService<IJsonSerializer>().GetType())
                         task {
-                            printfn "%s" cnnxn
                             match Repo.Location.getLocationsForUser u (Repo.getCtxt( cnnxn )) with
                             |Some ls -> return! ctx.WriteJsonAsync ls
                             |None    -> return! RequestErrors.NOT_FOUND "" next ctx
@@ -426,12 +433,22 @@ module Users =
         ]
 
 module Locations =
+    //let all = fun (next : HttpFunc) (ctx : HttpContext) ->
+    //    task {
+    //            let conts = Repo.Box.getBoxes "0" "The System" (Repo.getCtxt( cnnxn )) //TK - implement 'username' where clause, and location where
+    //            return! ctx.WriteJsonAsync conts
+    //    }
     let locations (getAll : bool) =
-        fun (next : HttpFunc) (ctx : HttpContext) ->
-            task {
-                let locs = Repo.Location.getSiteLocations "" "" (Repo.getCtxt( cnnxn ))
-                return! ctx.WriteJsonAsync locs
-            }   
+        session (function
+        | UserLoggedOn { Username = username; LocationId = loc; Context = isLocal } ->
+            fun (next : HttpFunc) (ctx : HttpContext) ->
+                task {
+                    let loc = if (bool.Parse(isLocal) && not getAll) then loc else "0"
+                    let locs = Repo.Location.getSiteLocations loc username (Repo.getCtxt( cnnxn ))
+                    return! ctx.WriteJsonAsync locs
+                }   
+        | _  -> RequestErrors.FORBIDDEN "Not authorised"
+    )
     
     let despatchlocations (getAll : bool) =
         choose [
@@ -560,38 +577,19 @@ module Boxes =
                             }
                     | _  ->  RequestErrors.FORBIDDEN "Not authorised" )
         ]
-    let allBoxes : HttpHandler =
-      choose [
-            GET >=> session (function
-                    |UserLoggedOn { Username = un; LocationId = loc; Context = isLocal } ->
-                        fun (next : HttpFunc) (ctx : Microsoft.AspNetCore.Http.HttpContext) ->
-                            task {
-                                let loc = "0"
-                                let conts = Repo.Box.getBoxes loc un (Repo.getCtxt( cnnxn )) //TK - implement 'username' where clause, and location where
-                                //OK ( JsonConvert.SerializeObject( conts, new Json.OptionConverter() ) )
-                                return! ctx.WriteJsonAsync conts
-                            }
-                    | _  ->  RequestErrors.FORBIDDEN "Not authorised"
-            )
-      ]
+
     let boxes =
         choose [
             GET >=> session (function
                     |UserLoggedOn { Username = un; LocationId = loc; Context = isLocal } ->
                         fun (next : HttpFunc) (ctx : Microsoft.AspNetCore.Http.HttpContext) ->
                             task {
-                                let _start = DateTime.Now
-                                let logger = ctx.GetLogger()
-                                logger.Log(LogLevel.Information, sprintf "start -  %A" _start )
                                 let loc = if (bool.Parse(isLocal)) then loc else "0"
                                 let conts = Repo.Box.getBoxes loc un (Repo.getCtxt( cnnxn )) //TK - implement 'username' where clause, and location where
-                                logger.Log(LogLevel.Information, sprintf "got stuff in -  %d" (DateTime.Now - _start).Milliseconds  )
-                                //let sr = ctx.GetJsonSerializer()
-                                //let json = sr.SerializeToBytes()
-                                //return! ctx.WriteBytesAsync json
-                                return! ctx.WriteJsonChunkedAsync conts
+                                return! ctx.WriteJsonAsync conts
                             }
                     | _  ->  RequestErrors.FORBIDDEN "Not authorised"
+
             )
             POST >=> session (function
                               |UserLoggedOn { Username = un } -> // LocationId = loc; Context = isLocal; Admin = _ } ->
@@ -621,7 +619,7 @@ module Boxes =
                                             //OK (JsonConvert.SerializeObject( box , new Json.OptionConverter()))
                                     }
                               |_ ->  RequestErrors.FORBIDDEN "Not authorised"
-                    )
+            )
         ]
 
     let boxesByLocationId id =
@@ -846,7 +844,7 @@ module Sample =
         ]
     let unpackSample = //called from the TSM router service - applicable to boxes destined for =>
     (* LocationId	SiteId	  Name	                                    PrinterIp
-        101	        32	    Halo Level 1 – Autolab	                  10.170.1.1*)
+        101	        32	    Halo Level 1 ï¿½ Autolab	                  10.170.1.1*)
         choose [
             POST    >=> fun (next : HttpFunc) (ctx : Microsoft.AspNetCore.Http.HttpContext) ->
                             task {
@@ -950,7 +948,7 @@ let webApp =
         route Account.health >=> Auth.health
         routef Api.toggleContext Home.toggleContext
         route Api.context >=> Home.getContext
-        //route "/locs" >=> Home.locs
+        //route "/locs" >=> Locations.all
         routex  "(.*)" >=> Home.home //necessary in Angular2 app, so that index.html is loaded if user refreshes in a 'route'
     ]
     
@@ -1001,16 +999,31 @@ let configureServices (services : IServiceCollection) =
     // Configure Giraffe dependencies
     services.AddGiraffe() |> ignore
     
-    services.AddDataProtection().PersistKeysToFileSystem(DirectoryInfo("/etc/keys/")) |> ignore
+    services.AddDataProtection().PersistKeysToFileSystem(
+                match Environment.OSVersion.Platform with
+                |PlatformID.Unix -> DirectoryInfo("/etc/keys/")
+                |_ -> DirectoryInfo(@"\\files-tdl\DEPT\IT\samptrakkeys\")
+        ) |> ignore
+    
     // Now customize only the IJsonSerializer by providing a custom
     // object of JsonSerializerSettings
+    
     let customSettings = JsonSerializerSettings(Culture = CultureInfo("en-GB"))
     customSettings.Converters.Add(new Json.OptionConverter())
 
     services.AddSingleton<IJsonSerializer>(
-        NewtonsoftJsonSerializer(customSettings)) |> ignore
-        
+       NewtonsoftJsonSerializer(customSettings)) |> ignore
+            
     
+    //let resolver = CompositeResolver.Create(
+    //                        FSharpResolver.Instance,
+    //                        StandardResolver.Default 
+    //                    )
+    //services.AddSingleton<IJsonSerializer>(Utf8JsonSerializer(resolver)) |> ignore
+    
+    
+    //services.AddSingleton<IJsonSerializer>( Thoth.Json.Giraffe.ThothSerializer() ) |> ignore
+
 let configureLogging (builder : ILoggingBuilder) =
     builder//.AddFilter(fun l -> l.Equals LogLevel.Error)
            .AddConsole()
@@ -1035,7 +1048,6 @@ let main _ =
     WebHostBuilder()
         .UseKestrel()
         .UseContentRoot(contentRoot)
-        //.UseIISIntegration()
         .UseWebRoot(webRoot)
         .ConfigureAppConfiguration(configureAppConfiguration)
         .Configure(Action<IApplicationBuilder> configureApp)

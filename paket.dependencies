@@ -9,6 +9,8 @@ nuget System.Data.SqlClient
 nuget SQLProvider
 nuget System.Configuration.ConfigurationManager
 nuget Newtonsoft.Json
+nuget Utf8Json.FSharpExtensions
+nuget Thoth.Json.Giraffe
 nuget BarcodeLib.Core
 nuget xunit
 nuget xunit.runner.visualstudio

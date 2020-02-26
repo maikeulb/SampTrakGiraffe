@@ -15,14 +15,16 @@
                 networkPath: "//request-forms/scans$"
                 mountOptions: "dir_mode=0755,file_mode=0644,noperm"
     ********* DONE ************
+
 2. Use the key to encrypt/decrypt state coookie **DONE**
-3. Improve serialisation perf (actually, this might be better from nginx ingress)
+3. Improve serialisation perf (actually, this might be better from nginx ingress) 
+    - filter out transient boxes.
 4. loading gif 
 5. appsettings
     - go through code, set config from appsettings (connxn string, smtp, monitored location) DONE
 6. wrap things in transactions - partial
 7. change location route - DONE
-8. change password route - test
+8. change password & reset routes - DONE
 9. Audit route (server side dotliquid) - DONE
 10. Make sure every route is set up
 11. GIT - *DONE*

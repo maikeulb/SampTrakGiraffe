@@ -13,10 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    
-    <None Include=".paket\paket.dependencies" />
-    
-    <None Include=".paket\paket.references" />
+
     
     <Watch Include="**\*.html" Exclude="bin\**\*" />
     <Content Include="Views\*">
@@ -51,9 +48,14 @@
     <Content Include="package-lock.json" />
     <Content Include="package.json" />
     <None Include="deploy.bat" />
+    <None Include="runlocal.ps1" />
     <Content Include=".angular-cli.json" />
     <Content Include="..\..\.gitignore" />
     <Content Include="..\..\.gitattributes" />
+
+    <None Include="paket.references" />
+
+    <None Include="..\..\paket.dependencies" />
   </ItemGroup>
   
   <ItemGroup>
@@ -64,6 +66,15 @@
   <ItemGroup>
     <Reference Include="BarcodeLib.Core">
       <HintPath>..\..\packages\BarcodeLib.Core\lib\netstandard2.0\BarcodeLib.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Thoth.Json.Giraffe">
+      <HintPath>..\..\packages\Thoth.Json.Giraffe\lib\netstandard2.0\Thoth.Json.Giraffe.dll</HintPath>
+    </Reference>
+    <Reference Include="Thoth.Json.Net">
+      <HintPath>..\..\packages\Thoth.Json.Net\lib\netstandard2.0\Thoth.Json.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="Utf8Json.FSharpExtensions">
+      <HintPath>..\..\packages\Utf8Json.FSharpExtensions\lib\netstandard2.0\Utf8Json.FSharpExtensions.dll</HintPath>
     </Reference>
   </ItemGroup>
   

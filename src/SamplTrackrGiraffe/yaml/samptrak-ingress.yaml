@@ -1,0 +1,24 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: samptrak-ingress
+spec:
+  tls:
+  - hosts:
+    - tubetrack.tdlpathology.com
+    secretName: letsencrypt-certs
+  rules:
+  - host: tubetrack.tdlpathology.com
+    http:
+      paths:
+      - path : /
+        backend:
+          serviceName: samptrak-svc
+          servicePort: 8094 # the port exposed by the container, not the service
+  - host: choobs
+    http:
+      paths:
+      - path : /
+        backend:
+          serviceName: sampgiraf-svc
+          servicePort: 9090

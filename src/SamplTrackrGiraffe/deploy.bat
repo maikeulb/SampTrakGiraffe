@@ -1,4 +1,5 @@
 ﻿@echo off
+cls
 echo "Cleaning ....."
 dotnet clean
 echo "Publish release build"

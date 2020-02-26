@@ -5,7 +5,7 @@ metadata:
   labels:
     app: sampgiraf
 spec:
-  type: NodePort 
+  type: NodePort
   # if your cluster supports it, uncomment the following to automatically create
   # an external load-balanced IP for the frontend service.
   # type: LoadBalancer

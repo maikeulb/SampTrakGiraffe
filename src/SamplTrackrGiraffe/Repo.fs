@@ -27,7 +27,7 @@ type UserLocationEntity = DbContext.``dbo.UserLocationEntity``
 type LocationEntity = DbContext.``dbo.LocationEntity``
 type ContainerEntity = DbContext.``dbo.ContainerEntity``
 
-QueryEvents.SqlQueryEvent.Add( printfn "%A")
+//QueryEvents.SqlQueryEvent.Add( printfn "%A")
 let getCtxt ( cnnxn : string ) =    Sql.GetDataContext( cnnxn )
 //let getCtxt () =  Sql.GetDataContext(  )
 
@@ -264,9 +264,13 @@ module Location =
           |> Seq.map (fun (s,ls) -> let locations = ls |> Seq.map (fun(_,l,f) -> {Location.LocationId = l.LocationId; Name = l.Name; PrinterIp = l.PrinterIp ; LabelFormat = { FormatId = f.FormatId; Name = f.Name } }) |> Seq.distinct |> Array.ofSeq
                                     {s with Locations=locations})
           |> Array.ofSeq
-
+    
+    //let getPagedSiteLocations locationId un (page: int) (ctx : DbContext) =
+    //    let allSiteLocations = getSiteLocations "0" un ctx
+    //    allSiteLocations |> Array.mapi (fun i s -> if (i = page) then s else { s with Locations = [||] })
+    
     let getSiteLocationsWithDespatchLocs locationId un (ctx : DbContext) =
-        let allSiteLocations = getSiteLocations "0" "" ctx
+        let allSiteLocations = getSiteLocations "0" un ctx
         query {
             for u in ctx.Dbo.User do
             join ul in ctx.Dbo.UserLocation on (u.UserId = ul.UserId)
@@ -416,31 +420,32 @@ module Box =
         |> List.ofSeq
 
     let getBoxes locationId un (ctx: DbContext) =
-        query {  for b in ctx.Dbo.Box do
-                 join d in ctx.Dbo.Location on (b.Destination = d.LocationId)
-                 join ll in ctx.Dbo.Location on (b.LastLocation = ll.LocationId)
-                 //join boxTyp in ctx.Dbo.BoxType on (b.BoxType = boxTyp.BoxType) // to exclude 'Transient Boxes'
-                 join userlocs in ctx.Dbo.UserLocation on (ll.LocationId = userlocs.LocationId)
-                 join user in ctx.Dbo.User on (userlocs.UserId = user.UserId)
-                 where ( (((%locationPredicate locationId) d) || ((%locationPredicate locationId) ll)) && ((%userPredicate un) user))
-                 select ( b,d, ll)
-        } |> Seq.map (fun (b,d,ll) ->
-                            let destination = {Location.LocationId = d.LocationId; Name = d.Name; PrinterIp = d.PrinterIp ; LabelFormat = { FormatId = 0; Name = "" } }
-                            let lastLocation = {Location.LocationId = ll.LocationId; Name = ll.Name; PrinterIp = ll.PrinterIp; LabelFormat = { FormatId = 0; Name = "" }  }
-                            {   BoxId = b.BoxId
-                                ParentBoxId = b.ParentBoxId |> ifZeroNone //|> Option.create
-                                BoxType = b.BoxType
-                                Description = b.Description
-                                LastLocation = lastLocation
-                                Destination = destination
-                                LastMoved = b.LastMoved
-                                User = b.User
-                                Status = b.Status
-                                Event = b.Event
-                                TrackingAuditId = b.TrackingAuditId
-                            })
-        |> List.ofSeq
-
+        let boxes = 
+            query {  for b in ctx.Dbo.Box do
+                     join d in ctx.Dbo.Location on (b.Destination = d.LocationId)
+                     join ll in ctx.Dbo.Location on (b.LastLocation = ll.LocationId)
+                     //join boxTyp in ctx.Dbo.BoxType on (b.BoxType = boxTyp.BoxType) // to exclude 'Transient Boxes'
+                     join userlocs in ctx.Dbo.UserLocation on (ll.LocationId = userlocs.LocationId)
+                     join user in ctx.Dbo.User on (userlocs.UserId = user.UserId)
+                     where ((((%locationPredicate locationId) d) || ((%locationPredicate locationId) ll)) && ((%userPredicate un) user) && (b.BoxType <> "Transient Box"))
+                     select ( b,d, ll)
+            } |> Seq.map (fun (b,d,ll) ->
+                                let destination = {Location.LocationId = d.LocationId; Name = d.Name; PrinterIp = d.PrinterIp ; LabelFormat = { FormatId = 0; Name = "" } }
+                                let lastLocation = {Location.LocationId = ll.LocationId; Name = ll.Name; PrinterIp = ll.PrinterIp; LabelFormat = { FormatId = 0; Name = "" }  }
+                                {   BoxId = b.BoxId
+                                    ParentBoxId = b.ParentBoxId |> ifZeroNone //|> Option.create
+                                    BoxType = b.BoxType
+                                    Description = b.Description
+                                    LastLocation = lastLocation
+                                    Destination = destination
+                                    LastMoved = b.LastMoved
+                                    User = b.User
+                                    Status = b.Status
+                                    Event = b.Event
+                                    TrackingAuditId = b.TrackingAuditId
+                                })
+            |> Array.ofSeq
+        boxes
 
 
     let getBoxesByLocationId id (ctx: DbContext) =
@@ -820,7 +825,7 @@ module Sample =
     let unpackSample (smp:Sample) (ctx:DbContext) =
         //let barcode = sprintf "%s%s" smp.SampleNo (smp.SampTypeSuffix.ToString())
         let checkedDestination = try
-                                    63 //ConfigurationManager.AppSettings.Get("checkedDestination") |> int
+                                    config.["checkedDestination"] |> int //ConfigurationManager.AppSettings.Get("checkedDestination") |> int
                                  with
                                  |_ -> 63
         //LocationID	Name	                        Site	RoleID
